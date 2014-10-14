@@ -7,9 +7,9 @@ import java.util.Enumeration;
 import java.util.List;
 
 /**
- * Default implementation of ResourceUtilities.
+ * Default implementation of ClassPathUtilities.
  */
-public class DefaultResourceUtilities implements ResourceUtilities {
+public class DefaultClassPathUtilities implements ClassPathUtilities {
     
     @Override
     public URL getResource(String resourcePath) throws 
@@ -30,7 +30,7 @@ public class DefaultResourceUtilities implements ResourceUtilities {
         List<URL> resources = new ArrayList<>();
         
         try {
-            Enumeration<URL> classLoaderResources = this.getClass().getClassLoader().getResources(resourcePath);
+            Enumeration<URL> classLoaderResources = getClassLoader().getResources(resourcePath);
             while (classLoaderResources.hasMoreElements()) {
                 resources.add(classLoaderResources.nextElement());
             }
@@ -39,6 +39,10 @@ public class DefaultResourceUtilities implements ResourceUtilities {
         }
         
         return resources;
+    }
+
+    private ClassLoader getClassLoader() {
+        return this.getClass().getClassLoader();
     }
     
 }

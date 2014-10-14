@@ -5,11 +5,11 @@ import java.util.List;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
-public class ResourceUtilitiesTest {
+public class ClassPathUtilitiesTest {
+    private final ClassPathUtilities resourceUtilities = new DefaultClassPathUtilities();
     
     @Test
     public void getresources_on_nonexistent_resource_returns_empty_list() throws CouldNotLookUpResourceException {
-        ResourceUtilities resourceUtilities = new DefaultResourceUtilities();
         List<URL> resources = resourceUtilities.getResources("nonexistentresource");
         
         assertEquals(0, resources.size());
@@ -17,16 +17,14 @@ public class ResourceUtilitiesTest {
 
     @Test
     public void getresources_on_resource_returns_list_with_one_item() throws CouldNotLookUpResourceException {
-        ResourceUtilities resourceUtilities = new DefaultResourceUtilities();
-        List<URL> resources = resourceUtilities.getResources("toolbox/ResourceUtilitiesTest.class");
+        List<URL> resources = resourceUtilities.getResources("toolbox/ClassPathUtilitiesTest.class");
         
         assertEquals(1, resources.size());
-        assertTrue(resources.get(0).toString().endsWith("/toolbox/ResourceUtilitiesTest.class"));
+        assertTrue(resources.get(0).toString().endsWith("/toolbox/ClassPathUtilitiesTest.class"));
     }
 
     @Test
     public void getresources_on_nonunique_resource_returns_list_of_items() throws CouldNotLookUpResourceException {
-        ResourceUtilities resourceUtilities = new DefaultResourceUtilities();
         List<URL> resources = resourceUtilities.getResources("");
 
         assertEquals(2, resources.size());
@@ -39,7 +37,6 @@ public class ResourceUtilitiesTest {
         ResourceNotFoundException exception = null;
 
         try {
-            ResourceUtilities resourceUtilities = new DefaultResourceUtilities();
             resourceUtilities.getResource("nonexistentresource");
         } catch (ResourceNotFoundException rnfe) {
             exception = rnfe;
@@ -51,11 +48,10 @@ public class ResourceUtilitiesTest {
 
     @Test
     public void getresource_on_resource_returns_item() throws CouldNotLookUpResourceException, ResourceNotFoundException, ResourceNotUniqueException {
-        ResourceUtilities resourceUtilities = new DefaultResourceUtilities();
-        URL resource = resourceUtilities.getResource("toolbox/ResourceUtilitiesTest.class");
+        URL resource = resourceUtilities.getResource("toolbox/ClassPathUtilitiesTest.class");
         
         assertNotNull(resource);
-        assertTrue(resource.toString().endsWith("/toolbox/ResourceUtilitiesTest.class"));
+        assertTrue(resource.toString().endsWith("/toolbox/ClassPathUtilitiesTest.class"));
     }
     
     @Test
@@ -63,7 +59,6 @@ public class ResourceUtilitiesTest {
         ResourceNotUniqueException exception = null;
 
         try {
-            ResourceUtilities resourceUtilities = new DefaultResourceUtilities();
             resourceUtilities.getResource("");
         } catch (ResourceNotUniqueException rnue) {
             exception = rnue;
