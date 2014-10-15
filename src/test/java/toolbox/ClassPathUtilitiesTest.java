@@ -1,5 +1,8 @@
 package toolbox;
 
+import toolbox.resource.ResourceNotUniqueException;
+import toolbox.resource.CouldNotLookUpResourceException;
+import toolbox.resource.ResourceNotFoundException;
 import java.net.URL;
 import java.util.List;
 import org.junit.Test;
