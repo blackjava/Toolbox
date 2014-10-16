@@ -2,6 +2,7 @@ package toolbox;
 
 import java.net.URL;
 import java.nio.file.Path;
+import java.util.List;
 
 /**
  * UrlUtilities provides functionality for working with URLs.
@@ -29,4 +30,15 @@ public interface UrlUtilities {
      */
     Path getLocalPathReference(URL url) throws NotLocalFileReferenceException;
 
+    /**
+     * Retrieve a list of resources contained in or referenced by the given 
+     * resource. If the resource is a folder, a list of files in the folder is 
+     * returned. If the resource is an archive, a list of all the files in the 
+     * archive is returned.
+     * @param url parent resource
+     * @return a list of child resources
+     * @throws toolbox.NotLocalFileReferenceException if the URL does not point 
+     * to the local file system
+     */
+    List<URL> getChildren(URL url) throws NotLocalFileReferenceException;
 }

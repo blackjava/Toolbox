@@ -1,9 +1,11 @@
 package toolbox;
 
+import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -66,5 +68,22 @@ public class UrlUtilitiesTest {
         
         assertNotNull(result);
         assertEquals(Paths.get("/file name.jar"), result);
+    }
+    
+    @Test
+    public void retrieve_files_in_directory_resource() throws MalformedURLException, NotLocalFileReferenceException {
+        SystemUtilities systemUtilities = new DefaultSystemUtilities();
+        Path temporaryDirectory = systemUtilities.getTemporaryDirectory();
+        File[] files = temporaryDirectory.toFile().listFiles();
+        
+        URL url = temporaryDirectory.toUri().toURL();
+        List<URL> children = urlUtilities.getChildren(url);
+        
+        assertEquals(files.length, children.size());
+        
+        for (int index = 0; index < files.length; index++) {
+            Path childPath = urlUtilities.getLocalPathReference(children.get(index));
+            assertEquals(files[index].getAbsolutePath(), childPath.toString());
+        }
     }
 }
