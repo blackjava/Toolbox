@@ -3,6 +3,7 @@ package toolbox;
 import java.net.URL;
 import java.nio.file.Path;
 import java.util.List;
+import toolbox.resource.CouldNotOpenResourceException;
 
 /**
  * UrlUtilities provides functionality for working with URLs.
@@ -39,6 +40,8 @@ public interface UrlUtilities {
      * @return a list of child resources
      * @throws toolbox.NotLocalFileReferenceException if the URL does not point 
      * to the local file system
+     * @throws toolbox.resource.CouldNotOpenResourceException if unable to read
+     * the referenced resource
      */
-    List<URL> getChildren(URL url) throws NotLocalFileReferenceException;
+    List<URL> getChildren(URL url) throws NotLocalFileReferenceException, CouldNotOpenResourceException;
 }

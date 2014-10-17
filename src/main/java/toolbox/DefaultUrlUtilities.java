@@ -1,12 +1,17 @@
 package toolbox;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
+import toolbox.resource.CouldNotOpenResourceException;
 
 /**
  * Default implementation of UrlUtilities.
@@ -89,11 +94,45 @@ public class DefaultUrlUtilities implements UrlUtilities {
     }
 
     @Override
-    public List<URL> getChildren(URL url) throws NotLocalFileReferenceException {
-        List<URL> children = new ArrayList<>();
+    public List<URL> getChildren(URL url) throws NotLocalFileReferenceException, CouldNotOpenResourceException {
+        List<URL> children;
         
         Path localPath = getLocalPathReference(url);
-        for (File child : localPath.toFile().listFiles()) {
+        File localResource = localPath.toFile();
+        
+        if (localResource.isDirectory()) {
+            children = getFilesInDirectory(localResource);
+        } else {
+            children = getFilesInArchive(localResource, localPath);
+        }
+        
+        return children;
+    }
+
+    private List<URL> getFilesInArchive(File localResource, Path localPath) throws CouldNotOpenResourceException {
+        List<URL> children = new ArrayList<>();
+        
+        try {
+            String urlPrefix = localResource.toURI().toURL().toString();
+            
+            ZipFile archive = new ZipFile(localResource);
+            Enumeration<? extends ZipEntry> entries = archive.entries();
+            while (entries.hasMoreElements()) {
+                ZipEntry nextElement = entries.nextElement();
+                String name = nextElement.getName();
+                children.add(new URL(urlPrefix + "!/" + name));
+            }
+        } catch (IOException ioe) {
+            throw new CouldNotOpenResourceException(ioe, localPath.toString());
+        }
+        
+        return children;
+    }
+
+    private List<URL> getFilesInDirectory(File localResource) {
+        List<URL> children = new ArrayList<>();
+        
+        for (File child : localResource.listFiles()) {
             try {
                 children.add(child.toURI().toURL());
             } catch (MalformedURLException ex) {

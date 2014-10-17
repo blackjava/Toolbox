@@ -6,8 +6,11 @@ import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import org.junit.Test;
 import static org.junit.Assert.*;
+import org.junit.Test;
+import toolbox.resource.CouldNotLookUpResourceException;
+import toolbox.resource.CouldNotOpenResourceException;
+import toolbox.resource.ResourceException;
 
 public class UrlUtilitiesTest {
     private final UrlUtilities urlUtilities = new DefaultUrlUtilities();
@@ -71,7 +74,7 @@ public class UrlUtilitiesTest {
     }
     
     @Test
-    public void retrieve_files_in_directory_resource() throws MalformedURLException, NotLocalFileReferenceException {
+    public void retrieve_files_in_directory_resource() throws MalformedURLException, NotLocalFileReferenceException, CouldNotOpenResourceException {
         SystemUtilities systemUtilities = new DefaultSystemUtilities();
         Path temporaryDirectory = systemUtilities.getTemporaryDirectory();
         File[] files = temporaryDirectory.toFile().listFiles();
@@ -85,5 +88,26 @@ public class UrlUtilitiesTest {
             Path childPath = urlUtilities.getLocalPathReference(children.get(index));
             assertEquals(files[index].getAbsolutePath(), childPath.toString());
         }
+    }
+
+    @Test
+    public void retrieve_files_in_archive_resource() throws MalformedURLException, NotLocalFileReferenceException, ResourceException {
+        ClassPathUtilities classPathUtilities = new DefaultClassPathUtilities();
+        URL testArchive = classPathUtilities.getResource("testarchive.jar");
+        
+        List<URL> children = urlUtilities.getChildren(testArchive);
+        
+        assertEquals(11, children.size());
+        assertEquals(testArchive.toString() + "!/Nytt Microsoft Excel Worksheet.xlsx", children.get(0).toString());
+        assertEquals(testArchive.toString() + "!/Nytt punktgrafikkbilde.bmp", children.get(1).toString());
+        assertEquals(testArchive.toString() + "!/Nytt Rich Text-vindu.rtf", children.get(2).toString());
+        assertEquals(testArchive.toString() + "!/Nytt tekstdokument.txt", children.get(3).toString());
+        assertEquals(testArchive.toString() + "!/Nytt WinRAR ZIP archive.zip", children.get(4).toString());
+        assertEquals(testArchive.toString() + "!/Ny mappe/", children.get(5).toString());
+        assertEquals(testArchive.toString() + "!/Ny mappe/Nytt Microsoft Excel Worksheet.xlsx", children.get(6).toString());
+        assertEquals(testArchive.toString() + "!/Ny mappe/Nytt punktgrafikkbilde.bmp", children.get(7).toString());
+        assertEquals(testArchive.toString() + "!/Ny mappe/Nytt Rich Text-vindu.rtf", children.get(8).toString());
+        assertEquals(testArchive.toString() + "!/Ny mappe/Nytt tekstdokument.txt", children.get(9).toString());
+        assertEquals(testArchive.toString() + "!/Ny mappe/Nytt WinRAR ZIP archive.zip", children.get(10).toString());
     }
 }
