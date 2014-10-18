@@ -110,4 +110,34 @@ public class UrlUtilitiesTest {
         assertEquals(testArchive.toString() + "!/Ny mappe/Nytt tekstdokument.txt", children.get(9).toString());
         assertEquals(testArchive.toString() + "!/Ny mappe/Nytt WinRAR ZIP archive.zip", children.get(10).toString());
     }
+
+    @Test
+    public void retrieve_files_in_folder_without_trailing_slash_inside_archive_resource() throws MalformedURLException, NotLocalFileReferenceException, ResourceException {
+        ClassPathUtilities classPathUtilities = new DefaultClassPathUtilities();
+        URL testArchive = new URL(classPathUtilities.getResource("testarchive.jar") + "!/Ny mappe");
+        
+        List<URL> children = urlUtilities.getChildren(testArchive);
+        
+        assertEquals(5, children.size());
+        assertEquals(testArchive.toString() + "/Nytt Microsoft Excel Worksheet.xlsx", children.get(0).toString());
+        assertEquals(testArchive.toString() + "/Nytt punktgrafikkbilde.bmp", children.get(1).toString());
+        assertEquals(testArchive.toString() + "/Nytt Rich Text-vindu.rtf", children.get(2).toString());
+        assertEquals(testArchive.toString() + "/Nytt tekstdokument.txt", children.get(3).toString());
+        assertEquals(testArchive.toString() + "/Nytt WinRAR ZIP archive.zip", children.get(4).toString());
+    }
+    
+    @Test
+    public void retrieve_files_in_folder_with_trailing_slash_inside_archive_resource() throws MalformedURLException, NotLocalFileReferenceException, ResourceException {
+        ClassPathUtilities classPathUtilities = new DefaultClassPathUtilities();
+        URL testArchive = new URL(classPathUtilities.getResource("testarchive.jar") + "!/Ny mappe/");
+        
+        List<URL> children = urlUtilities.getChildren(testArchive);
+        
+        assertEquals(5, children.size());
+        assertEquals(testArchive.toString() + "Nytt Microsoft Excel Worksheet.xlsx", children.get(0).toString());
+        assertEquals(testArchive.toString() + "Nytt punktgrafikkbilde.bmp", children.get(1).toString());
+        assertEquals(testArchive.toString() + "Nytt Rich Text-vindu.rtf", children.get(2).toString());
+        assertEquals(testArchive.toString() + "Nytt tekstdokument.txt", children.get(3).toString());
+        assertEquals(testArchive.toString() + "Nytt WinRAR ZIP archive.zip", children.get(4).toString());
+    }
 }

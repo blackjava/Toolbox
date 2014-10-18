@@ -17,6 +17,8 @@ import toolbox.resource.CouldNotOpenResourceException;
  * Default implementation of UrlUtilities.
  */
 public class DefaultUrlUtilities implements UrlUtilities {
+    private static final String ARCHIVE_CONTENT_SEPARATOR = "!/";
+    private static final String PATH_SEPARATOR = "/";
 
     @Override
     public boolean isLocalPathReference(URL url) {
@@ -76,8 +78,8 @@ public class DefaultUrlUtilities implements UrlUtilities {
     private String removeArchiveSubpath(String path) {
         String result = path;
         
-        if (result.indexOf("!/") > 0) {
-            result = result.substring(0, result.lastIndexOf("!/"));
+        if (result.indexOf(ARCHIVE_CONTENT_SEPARATOR) > 0) {
+            result = result.substring(0, result.lastIndexOf(ARCHIVE_CONTENT_SEPARATOR));
         }
         
         return result;
@@ -94,22 +96,44 @@ public class DefaultUrlUtilities implements UrlUtilities {
     }
 
     @Override
-    public List<URL> getChildren(URL url) throws NotLocalFileReferenceException, CouldNotOpenResourceException {
+    public List<URL> getChildren(URL resource) throws NotLocalFileReferenceException, CouldNotOpenResourceException {
         List<URL> children;
         
-        Path localPath = getLocalPathReference(url);
-        File localResource = localPath.toFile();
+        File localResource = getLocalPathReference(resource).toFile();
         
         if (localResource.isDirectory()) {
             children = getFilesInDirectory(localResource);
         } else {
-            children = getFilesInArchive(localResource, localPath);
+            children = new ArrayList<>();
+            
+            String resourcePath = toString(resource);
+            List<URL> archiveContent = getFilesInArchive(localResource);
+            for (URL archivedFile : archiveContent) {
+                String filePath = archivedFile.toString();
+                if (isChild(resourcePath, filePath)) {
+                    children.add(archivedFile);
+                }
+            }
         }
         
         return children;
     }
 
-    private List<URL> getFilesInArchive(File localResource, Path localPath) throws CouldNotOpenResourceException {
+    private static boolean isChild(String parentPath, String filePath) {
+        return filePath.startsWith(parentPath) && (filePath.length() > parentPath.length());
+    }
+
+    private String toString(URL url) {
+        String urlPath = url.toString();
+        
+        if (urlPath.contains(ARCHIVE_CONTENT_SEPARATOR) && !urlPath.endsWith(PATH_SEPARATOR)) {
+            urlPath += PATH_SEPARATOR;
+        }
+        
+        return urlPath;
+    }
+
+    private List<URL> getFilesInArchive(File localResource) throws CouldNotOpenResourceException {
         List<URL> children = new ArrayList<>();
         
         try {
@@ -120,10 +144,10 @@ public class DefaultUrlUtilities implements UrlUtilities {
             while (entries.hasMoreElements()) {
                 ZipEntry nextElement = entries.nextElement();
                 String name = nextElement.getName();
-                children.add(new URL(urlPrefix + "!/" + name));
+                children.add(new URL(urlPrefix + ARCHIVE_CONTENT_SEPARATOR + name));
             }
         } catch (IOException ioe) {
-            throw new CouldNotOpenResourceException(ioe, localPath.toString());
+            throw new CouldNotOpenResourceException(ioe, localResource.getPath());
         }
         
         return children;
