@@ -103,24 +103,40 @@ public class DefaultUrlUtilities implements UrlUtilities {
         
         if (localResource.isDirectory()) {
             children = getFilesInDirectory(localResource);
-        } else {
+        } else if (pointsToFileInsideArchive(resource)) {
             children = new ArrayList<>();
             
             String resourcePath = toString(resource);
             List<URL> archiveContent = getFilesInArchive(localResource);
             for (URL archivedFile : archiveContent) {
-                String filePath = archivedFile.toString();
-                if (isChild(resourcePath, filePath)) {
+                if (isChild(resourcePath, archivedFile.toString())) {
                     children.add(archivedFile);
                 }
             }
+        } else {
+            children = getFilesInArchive(localResource);
         }
         
         return children;
     }
 
-    private static boolean isChild(String parentPath, String filePath) {
-        return filePath.startsWith(parentPath) && (filePath.length() > parentPath.length());
+    private static boolean pointsToFileInsideArchive(URL resource) {
+        return resource.toString().contains(ARCHIVE_CONTENT_SEPARATOR);
+    }
+
+    private static boolean isChild(String parentPath, String filePath2) {
+        String filePath = filePath2;
+        if (filePath.startsWith(ARCHIVE_CONTENT_SEPARATOR)) {
+            filePath = filePath.substring(2);
+        }
+        
+        if (filePath.endsWith(PATH_SEPARATOR)) {
+            filePath = filePath.substring(0, filePath.length() - 1);
+        }
+        
+        return filePath.startsWith(parentPath) 
+                && (filePath.length() > parentPath.length())
+                && (filePath.indexOf(PATH_SEPARATOR, parentPath.length()) == -1);
     }
 
     private String toString(URL url) {

@@ -97,7 +97,7 @@ public class UrlUtilitiesTest {
         
         List<URL> children = urlUtilities.getChildren(testArchive);
         
-        assertEquals(11, children.size());
+        assertEquals(17, children.size());
         assertEquals(testArchive.toString() + "!/Nytt Microsoft Excel Worksheet.xlsx", children.get(0).toString());
         assertEquals(testArchive.toString() + "!/Nytt punktgrafikkbilde.bmp", children.get(1).toString());
         assertEquals(testArchive.toString() + "!/Nytt Rich Text-vindu.rtf", children.get(2).toString());
@@ -118,12 +118,13 @@ public class UrlUtilitiesTest {
         
         List<URL> children = urlUtilities.getChildren(testArchive);
         
-        assertEquals(5, children.size());
+        assertEquals(6, children.size());
         assertEquals(testArchive.toString() + "/Nytt Microsoft Excel Worksheet.xlsx", children.get(0).toString());
         assertEquals(testArchive.toString() + "/Nytt punktgrafikkbilde.bmp", children.get(1).toString());
         assertEquals(testArchive.toString() + "/Nytt Rich Text-vindu.rtf", children.get(2).toString());
         assertEquals(testArchive.toString() + "/Nytt tekstdokument.txt", children.get(3).toString());
         assertEquals(testArchive.toString() + "/Nytt WinRAR ZIP archive.zip", children.get(4).toString());
+        assertEquals(testArchive.toString() + "/Ny mappe/", children.get(5).toString());
     }
     
     @Test
@@ -133,11 +134,12 @@ public class UrlUtilitiesTest {
         
         List<URL> children = urlUtilities.getChildren(testArchive);
         
-        assertEquals(5, children.size());
+        assertEquals(6, children.size());
         assertEquals(testArchive.toString() + "Nytt Microsoft Excel Worksheet.xlsx", children.get(0).toString());
         assertEquals(testArchive.toString() + "Nytt punktgrafikkbilde.bmp", children.get(1).toString());
         assertEquals(testArchive.toString() + "Nytt Rich Text-vindu.rtf", children.get(2).toString());
         assertEquals(testArchive.toString() + "Nytt tekstdokument.txt", children.get(3).toString());
         assertEquals(testArchive.toString() + "Nytt WinRAR ZIP archive.zip", children.get(4).toString());
+        assertEquals(testArchive.toString() + "Ny mappe/", children.get(5).toString());
     }
 }
