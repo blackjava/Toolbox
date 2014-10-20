@@ -59,8 +59,38 @@ public class DefaultUrlUtilities implements UrlUtilities {
         String result = url;
         
         result = result.replaceAll("%20", " ");
+        result = result.replaceAll("%21", "!");
+        result = result.replaceAll("%22", "\"");
+        result = result.replaceAll("%23", "#");
+        result = result.replaceAll("%24", "$");
+        result = result.replaceAll("%25", "%");
+        result = result.replaceAll("%26", "&");
+        result = result.replaceAll("%27", "'");
+        result = result.replaceAll("%28", "(");
+        result = result.replaceAll("%29", ")");
+        result = result.replaceAll("%2A", "*");
+        result = result.replaceAll("%2B", "+");
+        result = result.replaceAll("%2C", ",");
+        result = result.replaceAll("%2D", "-");
+        result = result.replaceAll("%2E", ".");
+        result = result.replaceAll("%2F", "/");
+        result = result.replaceAll("%3A", ":");
+        result = result.replaceAll("%3B", ";");
+        result = result.replaceAll("%3C", "<");
+        result = result.replaceAll("%3D", "=");
+        result = result.replaceAll("%3E", ">");
+        result = result.replaceAll("%3F", "?");
+        result = result.replaceAll("%40", "@");
+        result = result.replaceAll("%5B", "[");
+        result = result.replaceAll("%5C", "\\");
+        result = result.replaceAll("%5D", "]");
+        result = result.replaceAll("%5E", "^");
+        result = result.replaceAll("%5F", "_");
+        result = result.replaceAll("%60", "`");
         result = result.replaceAll("%7B", "{");
+        result = result.replaceAll("%7C", "|");
         result = result.replaceAll("%7D", "}");
+        result = result.replaceAll("%7E", "~");
         
         return result;
     }
