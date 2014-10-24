@@ -5,17 +5,17 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.inject.Inject;
 import toolbox.resource.CouldNotLookUpResourceException;
-import toolbox.resource.ResourceException;
+import toolbox.resource.CouldNotOpenResourceException;
 
 /**
  * Default implementation of ClassUtilities.
  */
 public class DefaultClassUtilities implements ClassUtilities {
     private static final String CLASS_FILE_EXTENSION = ".class";
+    private static final String CLASS_PATH_SEPARATOR = ".";
+    private static final String RESOURCE_PATH_SEPARATOR = "/";
     
     @Inject
     private ClassPathUtilities classPathUtilities;
@@ -24,39 +24,61 @@ public class DefaultClassUtilities implements ClassUtilities {
     private UrlUtilities urlUtilities;
 
     @Override
-    public List<Class> getClassesInPackage(String packageName) throws ResourceException, NotLocalFileReferenceException {
+    public List<Class> getClassesInPackage(String packageName) {
+        List<Class> classes = new ArrayList<>();
+
+        try {
+            List<URL> resources = classPathUtilities.getResources(packageName.replaceAll("\\" + CLASS_PATH_SEPARATOR, RESOURCE_PATH_SEPARATOR));
+            classes = getClasses(resources);
+        } catch (CouldNotLookUpResourceException ex) {
+            // Could not find classes for package path
+        }
+        
+        return classes;
+    }
+
+    private List<Class> getClasses(List<URL> packages) {
         List<Class> classes = new ArrayList<>();
         
-        List<Path> rootLocations = getClassLoaderRootLocations();
-        
-        List<URL> resources = classPathUtilities.getResources(packageName.replaceAll("\\" + CLASS_PATH_SEPARATOR, RESOURCE_PATH_SEPARATOR));
-        for (URL resource : resources) {
-            List<URL> children = urlUtilities.getChildren(resource);
-            for (URL child: children) {
-                Path localPathReference = urlUtilities.getLocalPathReference(child);
-
-                if (isClassFile(localPathReference)) {
-                    for (Path root : rootLocations) {
-                        if (localPathReference.startsWith(root)) {
-                            Path classFile = localPathReference.subpath(root.getNameCount(), localPathReference.getNameCount());
-                            
-                            String result = getClassName(classFile);
-                            
-                            try {
-                                classes.add(Class.forName(result.toString()));
-                            } catch (ClassNotFoundException ex) {
-                                // Skipping class
-                            }
-                        }
+        for (URL resource : packages) {
+            try {
+                List<URL> children = urlUtilities.getChildren(resource);
+                for (URL child: children) {
+                    try {
+                        classes.add(getClass(child));
+                    } catch (InvalidClassFileException ex) {
+                        // Invalid class, skipping
                     }
-                    
                 }
+            } catch (NotLocalFileReferenceException | CouldNotOpenResourceException ex) {
+                // Not local resource, or not readable, skipping
             }
         }
         
         return classes;
     }
-    private static final String RESOURCE_PATH_SEPARATOR = "/";
+
+    private Class getClass(URL classLocation) throws InvalidClassFileException {
+        try {
+            List<Path> rootLocations = getClassLoaderRootLocations();
+            Path localPathReference = urlUtilities.getLocalPathReference(classLocation);
+            
+            if (isClassFile(localPathReference)) {
+                for (Path root : rootLocations) {
+                    if (localPathReference.startsWith(root)) {
+                        Path classFile = localPathReference.subpath(root.getNameCount(), localPathReference.getNameCount());
+                        
+                        String className = getClassName(classFile);
+                        return Class.forName(className);
+                    }
+                }
+            }
+        } catch (NotLocalFileReferenceException | ClassNotFoundException | CouldNotLookUpResourceException ex) {
+            throw new InvalidClassFileException(classLocation, ex);
+        }
+        
+        throw new InvalidClassFileException(classLocation);
+    }
 
     private String getClassName(Path classFile) {
         StringBuilder result = new StringBuilder();
@@ -78,7 +100,6 @@ public class DefaultClassUtilities implements ClassUtilities {
         
         return result.toString();
     }
-    private static final String CLASS_PATH_SEPARATOR = ".";
 
     private List<Path> getClassLoaderRootLocations() throws CouldNotLookUpResourceException, NotLocalFileReferenceException {
         List<Path> rootLocations = new ArrayList<>();
