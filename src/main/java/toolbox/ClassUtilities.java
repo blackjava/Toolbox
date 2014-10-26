@@ -6,6 +6,8 @@ import java.util.List;
  * ClassUtilities provides functionality for looking up classes dynamically.
  */
 public interface ClassUtilities {
+    String CLASS_PATH_SEPARATOR = ".";
+
     /**
      * Retrieve all classes found within a package.
      * 

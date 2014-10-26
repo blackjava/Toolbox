@@ -1,20 +1,20 @@
 package toolbox;
 
-import java.net.URL;
+import java.nio.file.Path;
 
 /**
  * InvalidClassFileException occurs when the application tries to reference a 
  * file as a class, and that is file is not a valid java class.
  */
 public class InvalidClassFileException extends Exception {
-    private final URL fileName;
+    private final Path fileName;
     
-    public InvalidClassFileException(URL fileName) {
+    public InvalidClassFileException(Path fileName) {
         super();
         this.fileName = fileName;
     }
 
-    public InvalidClassFileException(URL fileName, Throwable cause) {
+    public InvalidClassFileException(Path fileName, Throwable cause) {
         super(cause);
         this.fileName = fileName;
     }
