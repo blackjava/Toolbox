@@ -67,4 +67,18 @@ public class DefaultClassUtilities implements ClassUtilities {
 
         return rootLocations;
     }
+
+    @Override
+    public List<Class> getClassesInPackage(Class type, String packageName) {
+        List<Class> classes = new ArrayList<>();
+        
+        List<Class> classesInPackage = getClassesInPackage(packageName);
+        for (Class classInPackage : classesInPackage) {
+            if (type.isAssignableFrom(classInPackage)) {
+                classes.add(classInPackage);
+            }
+        }
+        
+        return classes;
+    }
 }
