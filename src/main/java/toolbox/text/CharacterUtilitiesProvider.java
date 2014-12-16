@@ -2,6 +2,7 @@ package toolbox.text;
 
 /**
  * Utility functionality for working with characters.
+ * @see CharacterUtilities
  */
 public interface CharacterUtilitiesProvider {
     boolean isOpeningCurlyBracket(Character character);

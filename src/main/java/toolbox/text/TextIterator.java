@@ -75,18 +75,34 @@ public class TextIterator implements Iterator<Character> {
         throw new UnsupportedOperationException();
     }
     
+    /**
+     * Determine whether or not the current character is inside quotes.
+     * @return true if the current character is inside quotes, false otherwise 
+     */
     public boolean insideQuotes() {
         return insideQuotes;
     }
     
+    /**
+     * Determine whether or not the current character is inside parentheses.
+     * @return true if the current character is inside parentheses, false otherwise 
+     */
     public boolean insideParentheses() {
         return (parenthesesLevel > 0);
     }
     
+    /**
+     * Determine whether or not the current character is inside square brackets.
+     * @return true if the current character is inside square brackets, false otherwise 
+     */
     public boolean insideSquareBrackets() {
         return (squareBracketLevel > 0);
     }
 
+    /**
+     * Determine whether or not the current character is inside curly brackets.
+     * @return true if the current character is inside curly brackets, false otherwise 
+     */
     public boolean insideCurlyBrackets() {
         return (curlyBracketLevel > 0);
     }
