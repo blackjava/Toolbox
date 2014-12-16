@@ -12,4 +12,5 @@ public interface CharacterUtilitiesProvider {
     boolean isClosingSquareBracket(Character character);
     boolean isQuote(Character character);
     boolean isSymbol(Character character);
+    boolean isEscapeCharacter(Character character);
 }

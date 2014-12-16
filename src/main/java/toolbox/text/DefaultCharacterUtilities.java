@@ -35,4 +35,8 @@ public class DefaultCharacterUtilities implements CharacterUtilitiesProvider {
     public boolean isSymbol(Character character) {
         return (!Character.isLetterOrDigit(character) && !Character.isWhitespace(character));
     }
+    
+    public boolean isEscapeCharacter(Character character) {
+        return character.equals('\\');
+    }
 }

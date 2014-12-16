@@ -37,4 +37,8 @@ public class CharacterUtilities {
     public static boolean isSymbol(Character character) {
         return provider.isSymbol(character);
     }
+
+    public static boolean isEscapeCharacter(Character character) {
+        return provider.isEscapeCharacter(character);
+    }
 }
